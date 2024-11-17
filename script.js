@@ -44,7 +44,7 @@ function addVisit() {
 
     localStorage.setItem('visits', JSON.stringify(visits));
     renderVisits();
-    
+
     // Limpiar campos de entrada después de agregar o editar la visita
     document.getElementById('clientName').value = '';
     document.getElementById('phone').value = '';
@@ -78,6 +78,8 @@ function renderVisits() {
         deleteButton.onclick = () => deleteVisit(index);
         actionsCell.appendChild(deleteButton);
     });
+
+    updateTotalCases(); // Actualizar el contador de casos
 }
 
 function editVisit(index) {
@@ -98,4 +100,12 @@ function deleteVisit(index) {
     renderVisits();
 }
 
-document.addEventListener('DOMContentLoaded', renderVisits);
+function updateTotalCases() {
+    const totalCases = visits.length;
+    document.getElementById('totalCases').textContent = totalCases;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    renderVisits();
+    updateTotalCases();
+});
