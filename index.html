@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Visitas a Clientes</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Control de Visitas a Clientes</h1>
+    <div>
+        <label for="clientName">Nombre del Cliente:</label>
+        <input type="text" id="clientName" oninput="loadClientData()">
+    </div>
+    <div>
+        <label for="phone">Teléfono:</label>
+        <input type="text" id="phone">
+    </div>
+    <div>
+        <label for="address">Dirección:</label>
+        <input type="text" id="address">
+    </div>
+    <div>
+        <label for="caseNumber">Número de Caso:</label>
+        <input type="text" id="caseNumber">
+    </div>
+    <div>
+        <label for="ticketStatus">¿Resuelto?:</label>
+        <input type="checkbox" id="ticketStatus">
+    </div>
+    <div>
+        <label for="visitDate">Fecha de Visita:</label>
+        <input type="date" id="visitDate">
+    </div>
+    <button onclick="addVisit()">Agregar Visita</button>
+    
+    <h2>Clientes Visitados Esta Semana</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Número de Caso</th>
+                <th>¿Resuelto?</th>
+                <th>Fecha de Visita</th>
+            </tr>
+        </thead>
+        <tbody id="visitTable">
+            <!-- Aquí se agregarán las filas de visitas -->
+        </tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
