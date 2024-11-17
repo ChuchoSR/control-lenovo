@@ -4,6 +4,7 @@ const clients = JSON.parse(localStorage.getItem('clients')) || [
 ];
 
 const visits = JSON.parse(localStorage.getItem('visits')) || [];
+let editingIndex = -1; // Variable para rastrear el índice de la visita en edición
 
 function loadClientData() {
     const clientName = document.getElementById('clientName').value;
@@ -26,32 +27,25 @@ function addVisit() {
     const ticketResolved = document.getElementById('ticketStatus').checked;
     const visitDate = document.getElementById('visitDate').value;
 
-    if (!clients.some(c => c.name.toLowerCase() === clientName.toLowerCase())) {
-        clients.push({ name: clientName, phone, address });
-        localStorage.setItem('clients', JSON.stringify(clients));
+    const visit = { clientName, phone, address, caseNumber, ticketResolved, visitDate };
+
+    if (editingIndex >= 0) {
+        // Editar visita existente
+        visits[editingIndex] = visit;
+        editingIndex = -1;
+    } else {
+        // Añadir nueva visita
+        if (!clients.some(c => c.name.toLowerCase() === clientName.toLowerCase())) {
+            clients.push({ name: clientName, phone, address });
+            localStorage.setItem('clients', JSON.stringify(clients));
+        }
+        visits.push(visit);
     }
 
-    const visit = { clientName, phone, address, caseNumber, ticketResolved, visitDate };
-    visits.push(visit);
     localStorage.setItem('visits', JSON.stringify(visits));
-
-    const table = document.getElementById('visitTable');
-    const row = table.insertRow();
-    const cell1 = row.insertCell(0);
-    const cell2 = row.insertCell(1);
-    const cell3 = row.insertCell(2);
-    const cell4 = row.insertCell(3);
-    const cell5 = row.insertCell(4);
-    const cell6 = row.insertCell(5);
-
-    cell1.textContent = clientName;
-    cell2.textContent = phone;
-    cell3.textContent = address;
-    cell4.textContent = caseNumber;
-    cell5.textContent = ticketResolved ? 'Sí' : 'No';
-    cell6.textContent = visitDate;
-
-    // Limpiar campos de entrada después de agregar la visita
+    renderVisits();
+    
+    // Limpiar campos de entrada después de agregar o editar la visita
     document.getElementById('clientName').value = '';
     document.getElementById('phone').value = '';
     document.getElementById('address').value = '';
@@ -60,24 +54,48 @@ function addVisit() {
     document.getElementById('visitDate').value = '';
 }
 
-function loadVisits() {
-    visits.forEach(visit => {
-        const table = document.getElementById('visitTable');
+function renderVisits() {
+    const table = document.getElementById('visitTable');
+    table.innerHTML = '';
+    
+    visits.forEach((visit, index) => {
         const row = table.insertRow();
-        const cell1 = row.insertCell(0);
-        const cell2 = row.insertCell(1);
-        const cell3 = row.insertCell(2);
-        const cell4 = row.insertCell(3);
-        const cell5 = row.insertCell(4);
-        const cell6 = row.insertCell(5);
+        row.insertCell(0).textContent = visit.clientName;
+        row.insertCell(1).textContent = visit.phone;
+        row.insertCell(2).textContent = visit.address;
+        row.insertCell(3).textContent = visit.caseNumber;
+        row.insertCell(4).textContent = visit.ticketResolved ? 'Sí' : 'No';
+        row.insertCell(5).textContent = visit.visitDate;
 
-        cell1.textContent = visit.clientName;
-        cell2.textContent = visit.phone;
-        cell3.textContent = visit.address;
-        cell4.textContent = visit.caseNumber;
-        cell5.textContent = visit.ticketResolved ? 'Sí' : 'No';
-        cell6.textContent = visit.visitDate;
+        const actionsCell = row.insertCell(6);
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Editar';
+        editButton.onclick = () => editVisit(index);
+        actionsCell.appendChild(editButton);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Eliminar';
+        deleteButton.onclick = () => deleteVisit(index);
+        actionsCell.appendChild(deleteButton);
     });
 }
 
-document.addEventListener('DOMContentLoaded', loadVisits);
+function editVisit(index) {
+    const visit = visits[index];
+    document.getElementById('clientName').value = visit.clientName;
+    document.getElementById('phone').value = visit.phone;
+    document.getElementById('address').value = visit.address;
+    document.getElementById('caseNumber').value = visit.caseNumber;
+    document.getElementById('ticketStatus').checked = visit.ticketResolved;
+    document.getElementById('visitDate').value = visit.visitDate;
+
+    editingIndex = index; // Actualizar índice de edición
+}
+
+function deleteVisit(index) {
+    visits.splice(index, 1);
+    localStorage.setItem('visits', JSON.stringify(visits));
+    renderVisits();
+}
+
+document.addEventListener('DOMContentLoaded', renderVisits);
